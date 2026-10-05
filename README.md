@@ -80,3 +80,13 @@ npx supabase gen types typescript --linked > src/types/database.ts
 - **`get_or_create_daily_log(date)`** RPC creates a day row and copies targets from the profile
 - Food entry triggers recompute `daily_logs` totals automatically
 - `weight_logs` deferred to a future migration
+
+## Google OAuth setup (Module 4)
+
+1. **Google Cloud Console** → create OAuth client (Web application)
+   - Authorized redirect URI: your Supabase callback, e.g. `https://<project-ref>.supabase.co/auth/v1/callback`
+2. **Supabase** → Authentication → Providers → Google → paste Client ID + Secret
+3. **Supabase** → Authentication → URL Configuration → add redirect URLs:
+   - `calorie-tracker://auth/callback`
+   - Your Expo Go dev URI shown on the login screen (if different during local testing)
+4. Restart Expo after changing `.env`

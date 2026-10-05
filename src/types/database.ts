@@ -375,3 +375,10 @@ export const Constants = {
     Enums: {},
   },
 } as const
+
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type DailyLog = Database['public']['Tables']['daily_logs']['Row'];
+export type FoodEntry = Database['public']['Tables']['food_entries']['Row'];
+export type FoodEntryInsert = Database['public']['Tables']['food_entries']['Insert'];
+export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+export type Gender = 'male' | 'female' | 'other';
