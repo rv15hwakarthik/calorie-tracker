@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { getTodayLogDate } from '@/src/lib/dates';
 
@@ -7,12 +7,37 @@ import { deleteFoodEntry } from './deleteFoodEntry';
 import { estimateFoodNutrition } from './estimateFoodNutrition';
 import { fetchFoodEntries } from './fetchFoodEntries';
 import { getOrCreateDailyLog } from './getOrCreateDailyLog';
+import { queryDailyLog } from './loadDailyLogView';
 import { dashboardKeys } from './queryKeys';
 
-export function useTodayDailyLog(logDate = getTodayLogDate()) {
-  return useQuery({
+const DASHBOARD_STALE_TIME_MS = 5 * 60 * 1000;
+
+export function dailyLogQueryOptions(logDate: string) {
+  return {
     queryKey: dashboardKeys.dailyLog(logDate),
-    queryFn: () => getOrCreateDailyLog(logDate),
+    queryFn: () => queryDailyLog(logDate),
+    staleTime: DASHBOARD_STALE_TIME_MS,
+    placeholderData: keepPreviousData,
+  };
+}
+
+export function useDailyLog(logDate: string) {
+  return useQuery(dailyLogQueryOptions(logDate));
+}
+
+/** @deprecated Use useDailyLog instead. */
+export function useTodayDailyLog(logDate = getTodayLogDate()) {
+  return useDailyLog(logDate);
+}
+
+export function useEnsureDailyLog() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (logDate: string) => getOrCreateDailyLog(logDate),
+    onSuccess: (data, logDate) => {
+      queryClient.setQueryData(dashboardKeys.dailyLog(logDate), { ...data, isPersisted: true });
+    },
   });
 }
 
@@ -21,6 +46,7 @@ export function useFoodEntries(dailyLogId: string | undefined) {
     queryKey: dashboardKeys.foodEntries(dailyLogId ?? ''),
     queryFn: () => fetchFoodEntries(dailyLogId!),
     enabled: Boolean(dailyLogId),
+    staleTime: DASHBOARD_STALE_TIME_MS,
   });
 }
 

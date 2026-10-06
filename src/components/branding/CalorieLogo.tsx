@@ -25,16 +25,16 @@ export function CalorieLogo({
 
   return (
     <Svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <G transform="translate(14 0) scale(2.15)">
+      <G transform="translate(14 -5) scale(2.05)">
         <Path d={FLAME} fill={THEME_GREEN} {...stroke} />
       </G>
-      <G transform="translate(2 10) scale(1.15)">
+      <G transform="translate(2 8) scale(1.15)">
         <Path d={FLAME} fill={THEME_GREEN} {...stroke} />
       </G>
-      <Circle cx="20" cy="48" r="2.5" fill={faceColor} />
-      <Circle cx="30" cy="48" r="2.5" fill={faceColor} />
+      <Circle cx="20" cy="46" r="2.5" fill={faceColor} />
+      <Circle cx="33" cy="46" r="2.5" fill={faceColor} />
       <Path
-        d="M21 54Q25 59 29 54"
+        d="M21 53Q26 58 31 53"
         stroke={faceColor}
         strokeWidth={2.8}
         strokeLinecap="round"

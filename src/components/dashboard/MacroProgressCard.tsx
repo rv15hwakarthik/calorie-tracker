@@ -2,11 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import {
   formatMacroValue,
+  getMacroAlertMessage,
   getMacroProgressState,
-  getMacroStatusLabel,
   getProgress,
-  getTargetPercentage,
-  type MacroProgressState,
   type MacroStat,
 } from '@/src/features/dashboard/macroStats';
 
@@ -17,10 +15,9 @@ type MacroProgressCardProps = {
 export function MacroProgressCard({ stat }: MacroProgressCardProps) {
   const progress = getProgress(stat.consumed, stat.target);
   const progressState = getMacroProgressState(stat.consumed, stat.target);
-  const statusLabel = getMacroStatusLabel(progressState);
-  const targetPercentage = getTargetPercentage(stat.consumed, stat.target);
+  const alertMessage = getMacroAlertMessage(stat.consumed, stat.target);
   const hasTarget = stat.target != null && stat.target > 0;
-  const colors = getProgressColors(progressState, stat.emphasized);
+  const fillColor = progressState === 'alert' ? '#E65100' : stat.emphasized ? '#1B5E20' : '#66BB6A';
 
   return (
     <View style={[styles.card, stat.emphasized ? styles.emphasizedCard : null]}>
@@ -32,35 +29,15 @@ export function MacroProgressCard({ stat }: MacroProgressCardProps) {
         </Text>
       </View>
       <View style={styles.track}>
-        <View
-          style={[
-            styles.fill,
-            { width: `${Math.round(progress * 100)}%`, backgroundColor: colors.fillColor },
-          ]}
-        />
+        <View style={[styles.fill, { width: `${Math.round(progress * 100)}%`, backgroundColor: fillColor }]} />
       </View>
-      {statusLabel ? (
-        <Text style={[styles.statusLabel, { color: colors.statusColor }]}>
-          {statusLabel}
-          {targetPercentage != null ? ` · ${targetPercentage}%` : null}
+      {alertMessage ? (
+        <Text style={styles.statusLabel} accessibilityRole="alert">
+          {alertMessage}
         </Text>
       ) : null}
     </View>
   );
-}
-
-function getProgressColors(state: MacroProgressState, emphasized?: boolean) {
-  if (state === 'over' || state === 'wellOver') {
-    return {
-      fillColor: '#E65100',
-      statusColor: '#E65100',
-    };
-  }
-
-  return {
-    fillColor: emphasized ? '#1B5E20' : '#66BB6A',
-    statusColor: '#666666',
-  };
 }
 
 const styles = StyleSheet.create({
@@ -108,5 +85,6 @@ const styles = StyleSheet.create({
   statusLabel: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#E65100',
   },
 });

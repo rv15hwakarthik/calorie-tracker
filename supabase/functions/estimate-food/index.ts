@@ -5,6 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const DEFAULT_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
+
 type FoodEstimate = {
   item_name: string;
   quantity_grams: number;
@@ -90,8 +92,9 @@ Deno.serve(async (req) => {
 });
 
 async function estimateWithGemini(apiKey: string, foodDescription: string): Promise<FoodEstimate> {
-  const model = Deno.env.get('GEMINI_MODEL') ?? 'gemini-3.8-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const configuredModel = Deno.env.get('GEMINI_MODEL')?.trim();
+  const models = configuredModel ? [configuredModel, ...DEFAULT_MODELS] : DEFAULT_MODELS;
+  const uniqueModels = [...new Set(models)];
 
   const prompt = [
     'You estimate nutrition for a calorie tracking mobile app.',
@@ -108,6 +111,35 @@ async function estimateWithGemini(apiKey: string, foodDescription: string): Prom
     'In notes, briefly explain your portion assumption in one short sentence.',
     `User input: ${foodDescription}`,
   ].join('\n');
+
+  let lastError = 'Could not estimate nutrition right now.';
+
+  for (const model of uniqueModels) {
+    const result = await requestGeminiEstimate(apiKey, model, prompt);
+
+    if (result.ok) {
+      return result.estimate;
+    }
+
+    lastError = result.error;
+
+    if (!result.retryable) {
+      break;
+    }
+  }
+
+  throw new Error(lastError);
+}
+
+async function requestGeminiEstimate(
+  apiKey: string,
+  model: string,
+  prompt: string,
+): Promise<
+  | { ok: true; estimate: FoodEstimate }
+  | { ok: false; error: string; retryable: boolean }
+> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const response = await fetch(url, {
     method: 'POST',
@@ -129,7 +161,7 @@ async function estimateWithGemini(apiKey: string, foodDescription: string): Prom
     let details = await response.text();
 
     try {
-      const parsed = JSON.parse(details) as { error?: { message?: string } };
+      const parsed = JSON.parse(details) as { error?: { message?: string; status?: string } };
       if (parsed.error?.message) {
         details = parsed.error.message;
       }
@@ -137,18 +169,66 @@ async function estimateWithGemini(apiKey: string, foodDescription: string): Prom
       // keep raw details
     }
 
-    throw new Error(`Gemini request failed: ${details.slice(0, 300)}`);
+    return {
+      ok: false,
+      error: toFriendlyGeminiError(details, response.status),
+      retryable: isRetryableGeminiError(details, response.status),
+    };
   }
 
   const payload = await response.json();
   const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (typeof text !== 'string') {
-    throw new Error('Gemini returned an empty response.');
+    return {
+      ok: false,
+      error: 'Gemini returned an empty response. Try again or enter nutrition manually.',
+      retryable: true,
+    };
   }
 
-  const parsed = JSON.parse(text) as FoodEstimate;
-  return normalizeEstimate(parsed);
+  try {
+    const parsed = JSON.parse(text) as FoodEstimate;
+    return { ok: true, estimate: normalizeEstimate(parsed) };
+  } catch {
+    return {
+      ok: false,
+      error: 'Gemini returned invalid nutrition data. Try again or enter nutrition manually.',
+      retryable: true,
+    };
+  }
+}
+
+function isRetryableGeminiError(details: string, status: number): boolean {
+  const normalized = details.toLowerCase();
+
+  if (status === 429 || status === 503 || status === 500) {
+    return true;
+  }
+
+  return (
+    normalized.includes('high demand') ||
+    normalized.includes('overloaded') ||
+    normalized.includes('unavailable')
+  );
+}
+
+function toFriendlyGeminiError(details: string, status: number): string {
+  const normalized = details.toLowerCase();
+
+  if (status === 429 || normalized.includes('quota') || normalized.includes('rate limit')) {
+    return 'AI estimate quota reached for now. Use Enter manually, or try again later.';
+  }
+
+  if (status === 503 || normalized.includes('high demand') || normalized.includes('unavailable')) {
+    return 'AI estimate is busy right now. Use Enter manually, or try again in a minute.';
+  }
+
+  if (normalized.includes('api key')) {
+    return 'AI estimate is not configured correctly. Use Enter manually for now.';
+  }
+
+  return `Could not estimate nutrition right now. Use Enter manually, or try again later.`;
 }
 
 function normalizeEstimate(raw: FoodEstimate): FoodEstimate {

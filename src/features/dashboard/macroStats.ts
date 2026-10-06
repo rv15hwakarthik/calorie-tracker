@@ -6,10 +6,10 @@ export function formatMacroValue(value: number | null | undefined): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-/** Ratio at which we show a stronger "well over target" warning (120%). */
+/** Ratio at which we show an over-target alert (120%). */
 export const OVER_TARGET_THRESHOLD = 1.2;
 
-export type MacroProgressState = 'none' | 'under' | 'over' | 'wellOver';
+export type MacroProgressState = 'none' | 'under' | 'alert';
 
 export function getMacroProgressState(
   consumed: number,
@@ -19,14 +19,8 @@ export function getMacroProgressState(
     return 'none';
   }
 
-  const ratio = consumed / target;
-
-  if (ratio >= OVER_TARGET_THRESHOLD) {
-    return 'wellOver';
-  }
-
-  if (ratio > 1) {
-    return 'over';
+  if (consumed / target >= OVER_TARGET_THRESHOLD) {
+    return 'alert';
   }
 
   return 'under';
@@ -43,16 +37,16 @@ export function getTargetPercentage(
   return Math.round((consumed / target) * 100);
 }
 
-export function getMacroStatusLabel(state: MacroProgressState): string | null {
-  if (state === 'over') {
-    return 'Over target';
+export function getMacroAlertMessage(
+  consumed: number,
+  target: number | null | undefined,
+): string | null {
+  if (getMacroProgressState(consumed, target) !== 'alert') {
+    return null;
   }
 
-  if (state === 'wellOver') {
-    return 'Well over target';
-  }
-
-  return null;
+  const targetPercentage = getTargetPercentage(consumed, target);
+  return targetPercentage != null ? `Over target · ${targetPercentage}%` : 'Over target';
 }
 
 export function getProgress(consumed: number, target: number | null | undefined): number {

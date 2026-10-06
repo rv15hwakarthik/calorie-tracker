@@ -7,8 +7,10 @@ export function StartupScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <CalorieLogo size={168} outline faceColor="#FFFFFF" />
-      <Text style={styles.title}>Calorie Tracker</Text>
+      <View style={styles.titleRow}>
+        <CalorieLogo size={56} outline faceColor="#FFFFFF" />
+        <Text style={styles.title}>Calorie Tracker</Text>
+      </View>
     </View>
   );
 }
@@ -19,13 +21,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#1B5E20',
-    gap: 20,
     paddingHorizontal: 24,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
   title: {
-    fontSize: 28,
+    fontSize: 36,
     fontWeight: '800',
     color: '#FFFFFF',
-    letterSpacing: 0.3,
+    flexShrink: 1,
   },
 });

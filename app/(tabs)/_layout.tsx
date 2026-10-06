@@ -1,17 +1,26 @@
 import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
+const TAB_ACTIVE = '#1B5E20';
+const TAB_INACTIVE = '#777777';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
+        tabBarActiveTintColor: TAB_ACTIVE,
+        tabBarInactiveTintColor: TAB_INACTIVE,
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E8E8E8',
+        },
+        headerStyle: {
+          backgroundColor: '#FAFAFA',
+        },
+        headerTintColor: '#1B5E20',
+        headerTitleStyle: {
+          fontWeight: '800',
+        },
       }}
     >
       <Tabs.Screen
@@ -25,12 +34,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="profile"
         options={{
-          title: 'More',
+          title: 'Profile',
+          headerShown: false,
           tabBarIcon: ({ color }) => (
-            <SymbolView name={{ ios: 'ellipsis.circle', android: 'more_horiz', web: 'more_horiz' }} tintColor={color} size={26} />
+            <SymbolView name={{ ios: 'person.fill', android: 'person', web: 'person' }} tintColor={color} size={26} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="edit-targets"
+        options={{
+          href: null,
+          title: 'Edit targets',
         }}
       />
     </Tabs>

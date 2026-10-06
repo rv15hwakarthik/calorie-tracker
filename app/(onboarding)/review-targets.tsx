@@ -1,11 +1,13 @@
 import { router, type Href } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { LargeButton } from '@/src/components/ui/LargeButton';
 import { StepScreen } from '@/src/components/ui/StepScreen';
 import { TargetField } from '@/src/components/ui/TargetField';
 import { useAuth } from '@/src/features/auth/AuthProvider';
+import { dashboardKeys } from '@/src/features/dashboard/queryKeys';
 import { submitOnboarding } from '@/src/features/onboarding/submitOnboarding';
 import { calculateTargets, type MacroTargets } from '@/src/lib/macros';
 import { useOnboardingStore } from '@/src/stores/onboardingStore';
@@ -32,6 +34,7 @@ function parseTargets(form: ReturnType<typeof targetsToFormState>, fallback: Mac
 }
 
 export default function ReviewTargetsScreen() {
+  const queryClient = useQueryClient();
   const { session, refreshProfile } = useAuth();
   const { age, gender, heightCm, weightKg, activityLevel, setTargets } = useOnboardingStore();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -93,6 +96,7 @@ export default function ReviewTargetsScreen() {
       });
 
       await refreshProfile();
+      await queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
       router.replace('/(tabs)' as Href);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Could not save your profile.');

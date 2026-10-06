@@ -56,6 +56,7 @@ export function AddFoodModal({
     null,
   );
   const [form, setForm] = useState(EMPTY_FORM);
+  const [entrySource, setEntrySource] = useState<'ai' | 'manual'>('manual');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const estimateFood = useEstimateFoodNutrition();
@@ -63,16 +64,19 @@ export function AddFoodModal({
   useEffect(() => {
     if (!visible) return;
 
+    estimateFood.reset();
     setStep('describe');
     setFoodDescription('');
     setEstimateMeta(null);
     setForm(EMPTY_FORM);
+    setEntrySource('manual');
     setErrorMessage(null);
   }, [visible]);
 
   const canEstimate = foodDescription.trim().length > 0;
   const canSubmit = form.itemName.trim().length > 0;
   const isBusy = loading || estimateFood.isPending;
+  const showManualEntry = step === 'describe' && estimateFood.isError;
 
   const confidenceLabel = useMemo(() => {
     if (!estimateMeta) return null;
@@ -90,6 +94,7 @@ export function AddFoodModal({
 
   const handleEstimate = async () => {
     setErrorMessage(null);
+    estimateFood.reset();
     Keyboard.dismiss();
 
     if (!canEstimate) {
@@ -99,6 +104,7 @@ export function AddFoodModal({
 
     try {
       const estimate = await estimateFood.mutateAsync(foodDescription.trim());
+      setEntrySource('ai');
       setEstimateMeta({ confidence: estimate.confidence, notes: estimate.notes });
       setForm({
         itemName: estimate.item_name,
@@ -113,6 +119,18 @@ export function AddFoodModal({
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Could not estimate nutrition.');
     }
+  };
+
+  const handleManualEntry = () => {
+    setErrorMessage(null);
+    Keyboard.dismiss();
+    setEntrySource('manual');
+    setEstimateMeta(null);
+    setForm({
+      ...EMPTY_FORM,
+      itemName: foodDescription.trim(),
+    });
+    setStep('review');
   };
 
   const handleSubmit = async () => {
@@ -134,7 +152,7 @@ export function AddFoodModal({
         carbsG: parseNumber(form.carbsG),
         fatG: parseNumber(form.fatG),
         calories: parseNumber(form.calories),
-        source: 'ai',
+        source: entrySource,
       });
       estimateFood.reset();
       onClose();
@@ -171,7 +189,13 @@ export function AddFoodModal({
                 <FormField
                   label="Your food"
                   value={foodDescription}
-                  onChangeText={setFoodDescription}
+                  onChangeText={(text) => {
+                    setFoodDescription(text);
+                    if (estimateFood.isError) {
+                      estimateFood.reset();
+                      setErrorMessage(null);
+                    }
+                  }}
                   keyboardType="default"
                   placeholder="1 plate chicken rice"
                   multiline
@@ -180,9 +204,11 @@ export function AddFoodModal({
             ) : (
               <>
                 <Text style={styles.stepLabel}>Step 2 of 2</Text>
-                <Text style={styles.title}>Review estimate</Text>
+                <Text style={styles.title}>{entrySource === 'ai' ? 'Review estimate' : 'Enter nutrition'}</Text>
                 <Text style={styles.subtitle}>
-                  AI-generated nutrition for: {foodDescription}
+                  {entrySource === 'ai'
+                    ? `AI-generated nutrition for: ${foodDescription}`
+                    : 'Fill in the nutrition values for this food.'}
                 </Text>
 
                 {estimateMeta ? (
@@ -253,6 +279,14 @@ export function AddFoodModal({
                   disabled={!canEstimate}
                   onPress={handleEstimate}
                 />
+                {showManualEntry ? (
+                  <LargeButton
+                    label="Enter manually"
+                    variant="secondary"
+                    disabled={isBusy}
+                    onPress={handleManualEntry}
+                  />
+                ) : null}
                 <LargeButton
                   label="Cancel"
                   variant="ghost"
