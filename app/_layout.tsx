@@ -9,6 +9,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { StartupScreen } from '@/src/components/branding/StartupScreen';
 import { AuthProvider } from '@/src/features/auth/AuthProvider';
+import { configureNotifications } from '@/src/features/notifications/configureNotifications';
 import { queryClient } from '@/src/lib/queryClient';
 
 export {
@@ -38,6 +39,10 @@ export default function RootLayout() {
     }, 2500);
 
     return () => clearTimeout(timeout);
+  }, []);
+
+  useEffect(() => {
+    void configureNotifications();
   }, []);
 
   if (!loaded) {

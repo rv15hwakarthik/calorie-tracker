@@ -1,0 +1,7 @@
+1. How to productionize? How to handle google redirect when changed to a APK or put on play store 
+2. Go through the code completely, mostly AI generated all is. FE and supabase functions etc. 
+3. Notifications - Basic in app flow out - improve summary + work on push notifications for dormant users 
+4. motivational animations on food add etc. dissaprove junk and approve healthy eating. Maybe think of a mascot types? like duolingo? 
+5. see how app code works - does every change required an App update, how does JS based ones work? one parent file and all others are fetched as JS? 
+6. Add analytics 
+7. AI capability to click a photo rather than typing in 6 puris and chole. 

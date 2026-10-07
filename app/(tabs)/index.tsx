@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -24,6 +24,7 @@ import {
   useFoodEntries,
 } from '@/src/features/dashboard/hooks';
 import { buildMacroStats, formatMacroValue } from '@/src/features/dashboard/macroStats';
+import { scheduleReminders } from '@/src/features/notifications/scheduleReminders';
 import { formatLogDateLabel, getTodayLogDate, isTodayLogDate, isYesterdayLogDate } from '@/src/lib/dates';
 
 export default function TodayScreen() {
@@ -91,6 +92,17 @@ export default function TodayScreen() {
   const emptyText = isViewingToday
     ? 'Add your first meal or snack to start tracking today'
     : 'Add food to backfill this day, or pick another date';
+
+  useEffect(() => {
+    if (!isViewingToday || !dailyLog || isFoodLoading) {
+      return;
+    }
+
+    void scheduleReminders({
+      dailyLog,
+      foodEntries,
+    }).catch(() => undefined);
+  }, [dailyLog, foodEntries, isFoodLoading, isViewingToday]);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

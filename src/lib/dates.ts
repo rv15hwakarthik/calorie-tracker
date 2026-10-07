@@ -1,11 +1,13 @@
 import { addDays, format, parseISO } from 'date-fns';
 import { formatInTimeZone } from 'date-fns-tz';
 
-/** Matches the timezone used in Supabase target-sync triggers. */
-export const APP_TIMEZONE = 'Asia/Kolkata';
+/** IANA timezone from the device (e.g. Asia/Kolkata, America/New_York). */
+export function getDeviceTimeZone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+}
 
-export function getTodayLogDate(): string {
-  return formatInTimeZone(new Date(), APP_TIMEZONE, 'yyyy-MM-dd');
+export function getTodayLogDate(timeZone = getDeviceTimeZone()): string {
+  return formatInTimeZone(new Date(), timeZone, 'yyyy-MM-dd');
 }
 
 export function isTodayLogDate(logDate: string): boolean {

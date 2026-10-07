@@ -166,6 +166,7 @@ export type Database = {
           target_fat_g: number | null
           target_fiber_g: number | null
           target_protein_g: number | null
+          timezone: string
           updated_at: string
           weight_kg: number | null
         }
@@ -183,6 +184,7 @@ export type Database = {
           target_fat_g?: number | null
           target_fiber_g?: number | null
           target_protein_g?: number | null
+          timezone?: string
           updated_at?: string
           weight_kg?: number | null
         }
@@ -200,6 +202,7 @@ export type Database = {
           target_fat_g?: number | null
           target_fiber_g?: number | null
           target_protein_g?: number | null
+          timezone?: string
           updated_at?: string
           weight_kg?: number | null
         }

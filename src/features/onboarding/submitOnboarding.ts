@@ -1,3 +1,4 @@
+import { getDeviceTimeZone } from '@/src/lib/dates';
 import { supabase } from '@/src/lib/supabase';
 import { toProfileTargetFields, type MacroTargets } from '@/src/lib/macros';
 import type { ActivityLevel, Gender, Profile } from '@/src/types/database';
@@ -22,6 +23,7 @@ export async function submitOnboarding(input: OnboardingSubmission): Promise<Pro
       weight_kg: input.weightKg,
       activity_level: input.activityLevel,
       ...toProfileTargetFields(input.targets),
+      timezone: getDeviceTimeZone(),
       onboarding_complete: true,
     })
     .eq('id', input.userId)

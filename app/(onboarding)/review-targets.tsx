@@ -97,7 +97,7 @@ export default function ReviewTargetsScreen() {
 
       await refreshProfile();
       await queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
-      router.replace('/(tabs)' as Href);
+      router.replace('/(onboarding)/enable-notifications' as Href);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Could not save your profile.');
     } finally {

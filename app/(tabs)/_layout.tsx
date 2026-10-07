@@ -1,8 +1,8 @@
-import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 
 const TAB_ACTIVE = '#1B5E20';
-const TAB_INACTIVE = '#777777';
+const TAB_INACTIVE = '#B8B8B8';
 
 export default function TabLayout() {
   return (
