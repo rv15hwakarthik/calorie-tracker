@@ -36,6 +36,31 @@ supabase/     Migrations and Edge Functions (backend-as-code)
    npm start
    ```
 
+## EAS builds (Android / iOS APK)
+
+Local `.env` is **not** uploaded to EAS. Cloud builds need the same `EXPO_PUBLIC_*` variables configured on Expo; without them the app crashes right after the green splash (`supabase.ts` throws on startup).
+
+1. Log in: `npx eas-cli@latest login`
+2. Create variables for the **preview** environment (repeat for **production** if you use that profile):
+
+   ```bash
+   npx eas-cli@latest env:create --scope project --environment preview \
+     --name EXPO_PUBLIC_SUPABASE_URL --value "https://YOUR_PROJECT.supabase.co" --visibility plaintext
+
+   npx eas-cli@latest env:create --scope project --environment preview \
+     --name EXPO_PUBLIC_SUPABASE_ANON_KEY --value "YOUR_ANON_KEY" --visibility plaintext
+   ```
+
+   Or add them in [expo.dev](https://expo.dev) → your project → **Environment variables** (preview).
+
+3. Build an installable APK (no Metro required on your phone):
+
+   ```bash
+   npx eas-cli@latest build --profile preview --platform android
+   ```
+
+4. After installing, add the **Redirect URI** shown on the login screen to Supabase Auth → URL Configuration.
+
 ## Supabase (Module 2)
 
 ### 1. Create a project
