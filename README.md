@@ -1,4 +1,4 @@
-# Calorie Tracker
+# kcalBud: Simple Calorie Tracker
 
 MVP mobile app for tracking protein, fiber, calories, carbs, and fat. Built with Expo (React Native) and Supabase.
 

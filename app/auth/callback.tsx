@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CalorieLogo } from '@/src/components/branding/CalorieLogo';
+import { APP_NAME } from '@/src/constants/branding';
 import { createSessionFromUrl } from '@/src/features/auth/createSessionFromUrl';
 import { authParamsInUrl } from '@/src/features/auth/validateSession';
 
@@ -69,7 +70,7 @@ export default function AuthCallbackScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <CalorieLogo size={96} outline faceColor="#FFFFFF" />
-      <Text style={styles.title}>Calorie Tracker</Text>
+      <Text style={styles.title}>{APP_NAME}</Text>
       <ActivityIndicator size="large" color="#FFFFFF" style={styles.spinner} />
       <Text style={styles.text}>Finishing sign-in…</Text>
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}

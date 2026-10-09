@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { CalorieLogo } from '@/src/components/branding/CalorieLogo';
+import { APP_NAME } from '@/src/constants/branding';
 
 export function StartupScreen() {
   return (
@@ -9,7 +10,7 @@ export function StartupScreen() {
       <StatusBar style="light" />
       <View style={styles.titleRow}>
         <CalorieLogo size={56} outline faceColor="#FFFFFF" />
-        <Text style={styles.title}>Calorie Tracker</Text>
+        <Text style={styles.title}>{APP_NAME}</Text>
       </View>
     </View>
   );

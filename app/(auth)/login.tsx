@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CalorieLogo } from '@/src/components/branding/CalorieLogo';
 import { GoogleIcon } from '@/src/components/icons/GoogleIcon';
 import { LargeButton } from '@/src/components/ui/LargeButton';
+import { APP_NAME } from '@/src/constants/branding';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { getAuthRedirectUri } from '@/src/features/auth/signInWithGoogle';
 
@@ -19,7 +20,7 @@ export default function LoginScreen() {
       <SafeAreaView style={styles.bootSafeArea} edges={['top', 'bottom']}>
         <View style={styles.bootContainer}>
           <CalorieLogo size={96} outline faceColor="#FFFFFF" />
-          <Text style={styles.bootTitle}>Calorie Tracker</Text>
+          <Text style={styles.bootTitle}>{APP_NAME}</Text>
           <ActivityIndicator size="large" color="#FFFFFF" />
         </View>
       </SafeAreaView>
@@ -48,9 +49,10 @@ export default function LoginScreen() {
       <View style={styles.container}>
         <View style={styles.titleRow}>
           <CalorieLogo size={56} />
-          <Text style={styles.title}>Calorie Tracker</Text>
+          <Text style={styles.title}>{APP_NAME}</Text>
         </View>
-        <Text style={styles.subtitle}>
+        <Text style={styles.subtitle}>A simple AI-powered calorie tracker</Text>
+        <Text style={styles.description}>
           Track protein, fiber, calories, carbs, and fat with a simple daily view
         </Text>
         <LargeButton
@@ -91,6 +93,12 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 20,
     lineHeight: 28,
+    fontWeight: '700',
+    color: '#1B5E20',
+  },
+  description: {
+    fontSize: 18,
+    lineHeight: 26,
     color: '#444444',
   },
   error: {
