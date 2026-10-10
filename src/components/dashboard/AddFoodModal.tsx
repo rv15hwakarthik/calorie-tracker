@@ -27,10 +27,12 @@ type AddFoodModalProps = {
 
 type Step = 'describe' | 'review';
 
-const FOOD_EXAMPLES = [
-  '2 pieces plain dosa',
-  '150g paneer tikka',
-  '1 bowl dal tadka',
+type ExampleSegment = { text: string; emphasis?: boolean };
+
+const FOOD_EXAMPLES: ExampleSegment[][] = [
+  [{ text: '2 pieces ' }, { text: 'masala', emphasis: true }, { text: ' dosa' }],
+  [{ text: '5 rotis ' }, { text: 'with ghee', emphasis: true }],
+  [{ text: '200g ' }, { text: 'grilled', emphasis: true }, { text: ' chicken' }],
 ];
 
 const EMPTY_FORM = {
@@ -187,9 +189,16 @@ export function AddFoodModal({
 
                 <View style={styles.examplesCard}>
                   <Text style={styles.examplesTitle}>Examples</Text>
-                  {FOOD_EXAMPLES.map((example) => (
-                    <Text key={example} style={styles.exampleLine}>
-                      {example}
+                  {FOOD_EXAMPLES.map((segments, index) => (
+                    <Text key={index} style={styles.exampleLine}>
+                      {segments.map((segment, segmentIndex) => (
+                        <Text
+                          key={segmentIndex}
+                          style={segment.emphasis ? styles.exampleEmphasis : undefined}
+                        >
+                          {segment.text}
+                        </Text>
+                      ))}
                     </Text>
                   ))}
                 </View>
@@ -436,6 +445,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     color: '#2E7D32',
+  },
+  exampleEmphasis: {
+    fontWeight: '700',
   },
   estimateCard: {
     backgroundColor: '#FFFFFF',
