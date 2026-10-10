@@ -6,6 +6,7 @@ const corsHeaders = {
 };
 
 const DEFAULT_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.8-flash'];
+const MAX_FOOD_DESCRIPTION_LENGTH = 100;
 
 type FoodEstimate = {
   item_name: string;
@@ -81,6 +82,13 @@ Deno.serve(async (req) => {
 
     if (!foodDescription) {
       return jsonResponse({ error: 'Describe what you ate, e.g. {1 plate} {chicken rice}.' }, 400);
+    }
+
+    if (foodDescription.length > MAX_FOOD_DESCRIPTION_LENGTH) {
+      return jsonResponse(
+        { error: `Description must be ${MAX_FOOD_DESCRIPTION_LENGTH} characters or fewer.` },
+        400,
+      );
     }
 
     const estimate = await estimateWithGemini(geminiApiKey, foodDescription);

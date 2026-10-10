@@ -35,6 +35,8 @@ const FOOD_EXAMPLES: ExampleSegment[][] = [
   [{ text: '200g ' }, { text: 'grilled', emphasis: true }, { text: ' chicken' }],
 ];
 
+const FOOD_DESCRIPTION_MAX_LENGTH = 100;
+
 const EMPTY_FORM = {
   itemName: '',
   quantityGrams: '',
@@ -216,6 +218,7 @@ export function AddFoodModal({
                   keyboardType="default"
                   placeholder="1 plate chicken rice"
                   multiline
+                  maxLength={FOOD_DESCRIPTION_MAX_LENGTH}
                 />
               </>
             ) : (
@@ -344,6 +347,7 @@ type FormFieldProps = {
   placeholder?: string;
   keyboardType?: 'default' | 'numeric';
   multiline?: boolean;
+  maxLength?: number;
   onChangeText: (value: string) => void;
 };
 
@@ -354,6 +358,7 @@ function FormField({
   placeholder,
   keyboardType = 'numeric',
   multiline = false,
+  maxLength,
   onChangeText,
 }: FormFieldProps) {
   return (
@@ -365,6 +370,7 @@ function FormField({
           multiline={multiline}
           value={value}
           onChangeText={onChangeText}
+          maxLength={maxLength}
           style={[styles.input, multiline ? styles.inputMultiline : null]}
           placeholder={placeholder ?? (keyboardType === 'default' ? 'Food name' : '0')}
           placeholderTextColor="#999999"
