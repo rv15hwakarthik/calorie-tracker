@@ -12,6 +12,7 @@
     },
     "android": {
       "package": "com.rv15hwakarthik.calorietracker",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#1B5E20",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

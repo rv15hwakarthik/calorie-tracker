@@ -10,7 +10,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LargeButton } from '@/src/components/ui/LargeButton';
 import type { AddFoodEntryInput } from '@/src/features/dashboard/addFoodEntry';
@@ -58,6 +58,7 @@ export function AddFoodModal({
   const [form, setForm] = useState(EMPTY_FORM);
   const [entrySource, setEntrySource] = useState<'ai' | 'manual'>('manual');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
 
   const estimateFood = useEstimateFoodNutrition();
 
@@ -165,10 +166,17 @@ export function AddFoodModal({
     <Modal animationType="slide" visible={visible} onRequestClose={resetAndClose}>
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top : 0}
           style={styles.flex}
         >
-          <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            style={styles.flex}
+            contentContainerStyle={styles.content}
+            keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
+            showsVerticalScrollIndicator={false}
+          >
             {step === 'describe' ? (
               <>
                 <Text style={styles.stepLabel}>Step 1 of 2</Text>
@@ -390,6 +398,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingTop: 16,
     paddingBottom: 24,
