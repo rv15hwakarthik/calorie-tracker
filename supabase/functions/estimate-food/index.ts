@@ -190,7 +190,7 @@ async function requestGeminiEstimate(
   if (typeof text !== 'string') {
     return {
       ok: false,
-      error: 'Gemini returned an empty response. Try again or enter nutrition manually.',
+      error: 'The model returned an empty response. Try again or enter nutrition manually.',
       retryable: true,
     };
   }
@@ -201,7 +201,7 @@ async function requestGeminiEstimate(
   } catch {
     return {
       ok: false,
-      error: 'Gemini returned invalid nutrition data. Try again or enter nutrition manually.',
+      error: 'The model returned invalid nutrition data. Try again or enter nutrition manually.',
       retryable: true,
     };
   }
