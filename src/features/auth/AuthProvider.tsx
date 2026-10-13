@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/supabase-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { queryClient } from '@/src/lib/queryClient';
 import { supabase } from '@/src/lib/supabase';
 import type { Profile } from '@/src/types/database';
 
@@ -202,6 +203,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       signOut: async () => {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
+        queryClient.clear();
         setSession(null);
         setProfile(null);
         setProfileLoadError(null);
