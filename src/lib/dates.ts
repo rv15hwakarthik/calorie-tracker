@@ -36,8 +36,8 @@ export function formatLogDateLabel(logDate: string): string {
   const date = parseISO(logDate);
 
   return date.toLocaleDateString(undefined, {
-    weekday: 'long',
-    month: 'long',
+    weekday: 'short',
+    month: 'short',
     day: 'numeric',
   });
 }

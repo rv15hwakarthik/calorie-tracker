@@ -25,7 +25,7 @@ import {
 } from '@/src/features/dashboard/hooks';
 import { buildMacroStats, formatMacroValue } from '@/src/features/dashboard/macroStats';
 import { scheduleReminders } from '@/src/features/notifications/scheduleReminders';
-import { formatLogDateLabel, getTodayLogDate, isTodayLogDate, isYesterdayLogDate } from '@/src/lib/dates';
+import { getTodayLogDate, isTodayLogDate } from '@/src/lib/dates';
 
 export default function TodayScreen() {
   const queryClient = useQueryClient();
@@ -130,9 +130,6 @@ export default function TodayScreen() {
         ) : dailyLog ? (
           <>
             <View style={styles.header}>
-              {!isViewingToday && !isYesterdayLogDate(selectedLogDate) ? (
-                <Text style={styles.dateSubLabel}>{formatLogDateLabel(selectedLogDate)}</Text>
-              ) : null}
               <Text style={styles.summaryTitle}>Daily progress</Text>
               <Text style={styles.summaryValue}>
                 {formatMacroValue(dailyLog.total_calories)} / {formatMacroValue(dailyLog.target_calories)}{' '}
