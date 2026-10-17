@@ -16,6 +16,7 @@ import { LargeButton } from '@/src/components/ui/LargeButton';
 import type { AddFoodEntryInput } from '@/src/features/dashboard/addFoodEntry';
 import type { FoodEstimate } from '@/src/features/dashboard/estimateFoodNutrition';
 import { useEstimateFoodNutrition } from '@/src/features/dashboard/hooks';
+import { useNetworkStatus } from '@/src/features/network/NetworkProvider';
 
 type AddFoodModalProps = {
   visible: boolean;
@@ -64,6 +65,7 @@ export function AddFoodModal({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
 
+  const { isOnline } = useNetworkStatus();
   const estimateFood = useEstimateFoodNutrition();
 
   useEffect(() => {
@@ -296,7 +298,7 @@ export function AddFoodModal({
                 <LargeButton
                   label="Estimate"
                   loading={estimateFood.isPending}
-                  disabled={!canEstimate}
+                  disabled={!canEstimate || !isOnline}
                   onPress={handleEstimate}
                 />
                 {showManualEntry ? (
@@ -319,7 +321,7 @@ export function AddFoodModal({
                 <LargeButton
                   label="Save food"
                   loading={loading}
-                  disabled={!canSubmit || estimateFood.isPending}
+                  disabled={!canSubmit || estimateFood.isPending || !isOnline}
                   onPress={handleSubmit}
                 />
                 <LargeButton

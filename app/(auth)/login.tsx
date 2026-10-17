@@ -9,6 +9,7 @@ import { LargeButton } from '@/src/components/ui/LargeButton';
 import { APP_NAME } from '@/src/constants/branding';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { getAuthRedirectUri } from '@/src/features/auth/signInWithGoogle';
+import { getSupabaseProjectRef } from '@/src/lib/supabaseProjectRef';
 
 export default function LoginScreen() {
   const { session, isLoading, signInWithGoogle } = useAuth();
@@ -30,6 +31,8 @@ export default function LoginScreen() {
   if (session) {
     return <Redirect href={'/' as Href} />;
   }
+
+  const supabaseProjectRef = __DEV__ ? getSupabaseProjectRef() : null;
 
   const handleSignIn = async () => {
     setErrorMessage(null);
@@ -62,7 +65,10 @@ export default function LoginScreen() {
           onPress={handleSignIn}
         />
         {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <Text style={styles.helper}>Redirect URI for Supabase setup:{'\n'}{getAuthRedirectUri()}</Text>
+        {supabaseProjectRef ? (
+          <Text style={styles.devBackend}>Dev backend: {supabaseProjectRef}</Text>
+        ) : null}
+        {supabaseProjectRef ? <Text style={styles.helper}>Redirect URI for Supabase setup:{'\n'}{getAuthRedirectUri()}</Text> : null} 
       </View>
     </SafeAreaView>
   );
@@ -105,6 +111,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#B00020',
     lineHeight: 22,
+  },
+  devBackend: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#2E7D32',
+    textAlign: 'center',
   },
   helper: {
     fontSize: 12,

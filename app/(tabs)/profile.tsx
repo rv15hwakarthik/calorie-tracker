@@ -2,6 +2,7 @@ import { router, type Href } from 'expo-router';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OfflineBanner } from '@/src/components/ui/OfflineBanner';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { getFirstName } from '@/src/features/auth/getFirstName';
 import { seedOnboardingFromProfile } from '@/src/features/onboarding/seedOnboardingFromProfile';
@@ -76,6 +77,7 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <OfflineBanner />
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={styles.screenLabel}>Profile</Text>

@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { OfflineBanner } from '@/src/components/ui/OfflineBanner';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { LargeButton } from '@/src/components/ui/LargeButton';
@@ -80,7 +82,8 @@ export default function EditTargetsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <OfflineBanner />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.subtitle}>These targets apply to today and future days you log.</Text>
 

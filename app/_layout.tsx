@@ -9,6 +9,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { StartupScreen } from '@/src/components/branding/StartupScreen';
 import { AuthProvider } from '@/src/features/auth/AuthProvider';
+import { NetworkProvider } from '@/src/features/network/NetworkProvider';
 import { configureNotifications } from '@/src/features/notifications/configureNotifications';
 import { queryClient } from '@/src/lib/queryClient';
 
@@ -57,21 +58,23 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="auth/callback" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(onboarding)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: 'modal', headerShown: true, title: 'Info' }}
-            />
-          </Stack>
-        </QueryClientProvider>
-      </AuthProvider>
+      <NetworkProvider>
+        <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="auth/callback" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(onboarding)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="modal"
+                options={{ presentation: 'modal', headerShown: true, title: 'Info' }}
+              />
+            </Stack>
+          </QueryClientProvider>
+        </AuthProvider>
+      </NetworkProvider>
     </SafeAreaProvider>
   );
 }

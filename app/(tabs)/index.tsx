@@ -15,6 +15,7 @@ import { DateNavigator } from '@/src/components/dashboard/DateNavigator';
 import { FoodEntryRow } from '@/src/components/dashboard/FoodEntryRow';
 import { MacroProgressCard } from '@/src/components/dashboard/MacroProgressCard';
 import { LargeButton } from '@/src/components/ui/LargeButton';
+import { OfflineBanner } from '@/src/components/ui/OfflineBanner';
 import {
   dailyLogQueryOptions,
   useAddFoodEntry,
@@ -24,10 +25,12 @@ import {
   useFoodEntries,
 } from '@/src/features/dashboard/hooks';
 import { buildMacroStats, formatMacroValue } from '@/src/features/dashboard/macroStats';
+import { useNetworkStatus } from '@/src/features/network/NetworkProvider';
 import { scheduleReminders } from '@/src/features/notifications/scheduleReminders';
 import { getTodayLogDate, isTodayLogDate } from '@/src/lib/dates';
 
 export default function TodayScreen() {
+  const { isOnline } = useNetworkStatus();
   const queryClient = useQueryClient();
   const [selectedLogDate, setSelectedLogDate] = useState(() => getTodayLogDate());
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -106,6 +109,7 @@ export default function TodayScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <OfflineBanner />
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
@@ -178,7 +182,7 @@ export default function TodayScreen() {
       <View style={styles.footer}>
         <LargeButton
           label="Add food"
-          disabled={!dailyLog || isDayLoading}
+          disabled={!dailyLog || isDayLoading || !isOnline}
           loading={ensureDailyLog.isPending}
           onPress={() => void handleOpenAddFood()}
         />
