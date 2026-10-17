@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { BootstrapErrorScreen } from '@/src/components/branding/BootstrapErrorScreen';
 import { StartupScreen } from '@/src/components/branding/StartupScreen';
 import { useAuth } from '@/src/features/auth/AuthProvider';
+import { useNetworkStatus } from '@/src/features/network/NetworkProvider';
 
 const STARTUP_MIN_MS = 1400;
 
@@ -15,9 +16,9 @@ export default function Index() {
     isRefreshingProfile,
     profileLoadError,
     retryProfileLoad,
-    signOut,
   } = useAuth();
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const { isOnline } = useNetworkStatus();
 
   useEffect(() => {
     const timer = setTimeout(() => setMinTimeElapsed(true), STARTUP_MIN_MS);
@@ -34,15 +35,26 @@ export default function Index() {
     return <Redirect href={'/(auth)/login' as Href} />;
   }
 
-  if (profileLoadError) {
+  if (!profile && !isOnline) {
     return (
       <BootstrapErrorScreen
-        message={profileLoadError}
+        title="You are offline"
+        message="Please check your internet connection and try again."
         onRetry={() => {
           void retryProfileLoad();
         }}
-        onSignOut={() => {
-          void signOut();
+        retrying={isRefreshingProfile}
+      />
+    );
+  }
+
+  if (profileLoadError) {
+    return (
+      <BootstrapErrorScreen
+        title="Couldn't load your account"
+        message={profileLoadError}
+        onRetry={() => {
+          void retryProfileLoad();
         }}
         retrying={isRefreshingProfile}
       />
