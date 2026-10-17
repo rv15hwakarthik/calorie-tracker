@@ -1,6 +1,7 @@
 import NetInfo, { type NetInfoState } from '@react-native-community/netinfo';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { getIsOnlineFromNetInfo } from './networkStatus';
 import { setupReactQueryOnlineManager } from './setupOnlineManager';
 
 type NetworkContextValue = {
@@ -26,8 +27,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // const isOnline = netInfo ? getIsOnlineFromNetInfo(netInfo) : true;
-  const isOnline = false;
+  const isOnline = netInfo ? getIsOnlineFromNetInfo(netInfo) : true;
 
   const value = useMemo(() => ({ isOnline, netInfo }), [isOnline, netInfo]);
 
