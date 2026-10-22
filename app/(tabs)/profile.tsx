@@ -2,6 +2,7 @@ import { router, type Href } from 'expo-router';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { NotificationSettingsRow } from '@/src/components/profile/NotificationSettingsRow';
 import { OfflineBanner } from '@/src/components/ui/OfflineBanner';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { getFirstName } from '@/src/features/auth/getFirstName';
@@ -95,6 +96,7 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Settings</Text>
           <View style={styles.menuCard}>
+            <NotificationSettingsRow />
             <ProfileMenuRow
               label="Edit targets"
               description="Update your daily macro and calorie goals"
