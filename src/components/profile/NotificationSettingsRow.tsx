@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 import { Alert, Platform, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { areLocalNotificationsSupported } from '@/src/features/notifications/notificationsModule';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import {
   getNotificationPermissionStatus,
   openNotificationSettings,
@@ -22,6 +23,7 @@ function getDescription(status: NotificationPermissionStatus): string {
 }
 
 export function NotificationSettingsRow() {
+  const { colors } = useAppTheme();
   const [status, setStatus] = useState<NotificationPermissionStatus>('undetermined');
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -37,10 +39,10 @@ export function NotificationSettingsRow() {
 
   if (!areLocalNotificationsSupported()) {
     return (
-      <View style={styles.row}>
+      <View style={[styles.row, { borderBottomColor: colors.borderSubtle }]}>
         <View style={styles.copy}>
-          <Text style={styles.label}>Notifications</Text>
-          <Text style={styles.description}>
+          <Text style={[styles.label, { color: colors.text }]}>Notifications</Text>
+          <Text style={[styles.description, { color: colors.textMuted }]}>
             Reminders need a development or store build
           </Text>
         </View>
@@ -88,10 +90,10 @@ export function NotificationSettingsRow() {
   };
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { borderBottomColor: colors.borderSubtle }]}>
       <View style={styles.copy}>
-        <Text style={styles.label}>Notifications</Text>
-        <Text style={styles.description}>{getDescription(status)}</Text>
+        <Text style={[styles.label, { color: colors.text }]}>Notifications</Text>
+        <Text style={[styles.description, { color: colors.textMuted }]}>{getDescription(status)}</Text>
       </View>
       <Switch
         accessibilityLabel="Notifications"
@@ -100,8 +102,8 @@ export function NotificationSettingsRow() {
         onValueChange={(value) => {
           void handleToggle(value);
         }}
-        trackColor={{ false: '#D0D0D0', true: '#A5D6A7' }}
-        thumbColor={isOn ? '#1B5E20' : '#F5F5F5'}
+        trackColor={{ false: colors.border, true: colors.brandBorder }}
+        thumbColor={isOn ? colors.brandDark : colors.surface}
       />
     </View>
   );
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#ECECEC',
   },
   copy: {
     flex: 1,
@@ -125,11 +126,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#111111',
   },
   description: {
     fontSize: 15,
     lineHeight: 21,
-    color: '#666666',
   },
 });

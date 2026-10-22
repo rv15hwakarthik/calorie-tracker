@@ -1,5 +1,8 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View, type PressableProps } from 'react-native';
+
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type LargeButtonProps = PressableProps & {
   label: string;
@@ -17,7 +20,16 @@ export function LargeButton({
   style,
   ...props
 }: LargeButtonProps) {
+  const { colors, colorScheme } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors, colorScheme), [colors, colorScheme]);
   const isDisabled = disabled || loading;
+
+  const spinnerColor =
+    variant === 'primary'
+      ? colorScheme === 'dark'
+        ? colors.background
+        : '#FFFFFF'
+      : colors.text;
 
   return (
     <Pressable
@@ -33,7 +45,7 @@ export function LargeButton({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#fff' : '#3C4043'} />
+        <ActivityIndicator color={spinnerColor} />
       ) : (
         <View style={styles.content}>
           {icon ? <View style={styles.iconWrap}>{icon}</View> : null}
@@ -44,60 +56,65 @@ export function LargeButton({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    minHeight: 56,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  primary: {
-    backgroundColor: '#1B5E20',
-  },
-  secondary: {
-    backgroundColor: '#E8F5E9',
-    borderWidth: 1,
-    borderColor: '#A5D6A7',
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-  },
-  google: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#DADCE0',
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  iconWrap: {
-    width: 20,
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  primaryLabel: {
-    color: '#FFFFFF',
-  },
-  secondaryLabel: {
-    color: '#1B5E20',
-  },
-  ghostLabel: {
-    color: '#1B5E20',
-  },
-  googleLabel: {
-    color: '#3C4043',
-  },
-});
+function createStyles(colors: AppThemeColors, colorScheme: 'light' | 'dark') {
+  const primaryBackground = colorScheme === 'dark' ? colors.brand : colors.brandDark;
+  const primaryLabelColor = colorScheme === 'dark' ? colors.background : '#FFFFFF';
+
+  return StyleSheet.create({
+    base: {
+      minHeight: 56,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 20,
+    },
+    primary: {
+      backgroundColor: primaryBackground,
+    },
+    secondary: {
+      backgroundColor: colors.brandMutedBg,
+      borderWidth: 1,
+      borderColor: colors.brandBorder,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+    },
+    google: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 12,
+    },
+    iconWrap: {
+      width: 20,
+      alignItems: 'center',
+    },
+    label: {
+      fontSize: 20,
+      fontWeight: '700',
+    },
+    primaryLabel: {
+      color: primaryLabelColor,
+    },
+    secondaryLabel: {
+      color: colors.brandDark,
+    },
+    ghostLabel: {
+      color: colors.brandDark,
+    },
+    googleLabel: {
+      color: colors.text,
+    },
+  });
+}

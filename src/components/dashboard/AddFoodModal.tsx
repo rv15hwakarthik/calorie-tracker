@@ -9,6 +9,8 @@ import {
   Text,
   TextInput,
   View,
+  type TextStyle,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -17,6 +19,8 @@ import type { AddFoodEntryInput } from '@/src/features/dashboard/addFoodEntry';
 import type { FoodEstimate } from '@/src/features/dashboard/estimateFoodNutrition';
 import { useEstimateFoodNutrition } from '@/src/features/dashboard/hooks';
 import { useNetworkStatus } from '@/src/features/network/NetworkProvider';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type AddFoodModalProps = {
   visible: boolean;
@@ -55,6 +59,8 @@ export function AddFoodModal({
   onClose,
   onSubmit,
 }: AddFoodModalProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [step, setStep] = useState<Step>('describe');
   const [foodDescription, setFoodDescription] = useState('');
   const [estimateMeta, setEstimateMeta] = useState<Pick<FoodEstimate, 'confidence' | 'notes'> | null>(
@@ -188,7 +194,8 @@ export function AddFoodModal({
                 <Text style={styles.stepLabel}>Step 1 of 2</Text>
                 <Text style={styles.title}>What did you eat?</Text>
                 <Text style={styles.subtitle}>
-                  Enter the food name and amount eaten in the following format to get the nutrition estimate - <Text style={styles.examplesTitle}>{"{quantity} {foodName}"}</Text>
+                  Enter the food name and amount eaten in the following format to get the nutrition estimate -{' '}
+                  <Text style={styles.examplesTitle}>{"{quantity} {foodName}"}</Text>
                 </Text>
 
                 <View style={styles.examplesCard}>
@@ -208,6 +215,8 @@ export function AddFoodModal({
                 </View>
 
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Your food"
                   value={foodDescription}
                   onChangeText={(text) => {
@@ -243,12 +252,16 @@ export function AddFoodModal({
                 ) : null}
 
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Food name"
                   value={form.itemName}
                   onChangeText={(itemName) => setForm((current) => ({ ...current, itemName }))}
                   keyboardType="default"
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Amount eaten"
                   suffix="g"
                   value={form.quantityGrams}
@@ -257,30 +270,40 @@ export function AddFoodModal({
                   }
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Calories"
                   suffix="kcal"
                   value={form.calories}
                   onChangeText={(calories) => setForm((current) => ({ ...current, calories }))}
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Protein"
                   suffix="g"
                   value={form.proteinG}
                   onChangeText={(proteinG) => setForm((current) => ({ ...current, proteinG }))}
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Fiber"
                   suffix="g"
                   value={form.fiberG}
                   onChangeText={(fiberG) => setForm((current) => ({ ...current, fiberG }))}
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Carbs"
                   suffix="g"
                   value={form.carbsG}
                   onChangeText={(carbsG) => setForm((current) => ({ ...current, carbsG }))}
                 />
                 <FormField
+                  styles={styles}
+                  colors={colors}
                   label="Fat"
                   suffix="g"
                   value={form.fatG}
@@ -342,7 +365,19 @@ export function AddFoodModal({
   );
 }
 
+type FormFieldStyles = {
+  field: ViewStyle;
+  fieldLabel: TextStyle;
+  inputRow: ViewStyle;
+  inputRowMultiline: ViewStyle;
+  input: TextStyle;
+  inputMultiline: TextStyle;
+  suffix: TextStyle;
+};
+
 type FormFieldProps = {
+  styles: FormFieldStyles;
+  colors: AppThemeColors;
   label: string;
   value: string;
   suffix?: string;
@@ -354,6 +389,8 @@ type FormFieldProps = {
 };
 
 function FormField({
+  styles,
+  colors,
   label,
   value,
   suffix,
@@ -375,7 +412,7 @@ function FormField({
           maxLength={maxLength}
           style={[styles.input, multiline ? styles.inputMultiline : null]}
           placeholder={placeholder ?? (keyboardType === 'default' ? 'Food name' : '0')}
-          placeholderTextColor="#999999"
+          placeholderTextColor={colors.textDisabled}
         />
         {suffix ? <Text style={styles.suffix}>{suffix}</Text> : null}
       </View>
@@ -406,120 +443,126 @@ function parseOptionalNumber(value: string) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-    gap: 16,
-  },
-  stepLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2E7D32',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#111111',
-  },
-  subtitle: {
-    fontSize: 18,
-    lineHeight: 26,
-    color: '#444444',
-  },
-  examplesCard: {
-    backgroundColor: '#F1F8E9',
-    borderRadius: 16,
-    padding: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#A5D6A7',
-  },
-  examplesTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1B5E20',
-  },
-  exampleLine: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#2E7D32',
-  },
-  exampleEmphasis: {
-    fontWeight: '700',
-  },
-  estimateCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    gap: 6,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  estimateTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1B5E20',
-  },
-  estimateNotes: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#555555',
-  },
-  field: {
-    gap: 8,
-  },
-  fieldLabel: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: 16,
-    minHeight: 56,
-  },
-  inputRowMultiline: {
-    alignItems: 'flex-start',
-    paddingVertical: 12,
-  },
-  input: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111111',
-  },
-  inputMultiline: {
-    minHeight: 72,
-    textAlignVertical: 'top',
-  },
-  suffix: {
-    fontSize: 18,
-    color: '#666666',
-    marginLeft: 8,
-  },
-  error: {
-    fontSize: 16,
-    color: '#B00020',
-    lineHeight: 22,
-  },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 8,
-    gap: 12,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      flexGrow: 1,
+      paddingHorizontal: 24,
+      paddingTop: 16,
+      paddingBottom: 24,
+      gap: 16,
+    },
+    stepLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.brand,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: '800',
+      color: colors.text,
+    },
+    subtitle: {
+      fontSize: 18,
+      lineHeight: 26,
+      color: colors.textMuted,
+    },
+    examplesCard: {
+      backgroundColor: colors.brandMutedBg,
+      borderRadius: 16,
+      padding: 16,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.brandBorder,
+    },
+    examplesTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.brandDark,
+    },
+    exampleLine: {
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors.brand,
+    },
+    exampleEmphasis: {
+      fontWeight: '700',
+    },
+    estimateCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      gap: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    estimateTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.brandDark,
+    },
+    estimateNotes: {
+      fontSize: 15,
+      lineHeight: 22,
+      color: colors.textMuted,
+    },
+    field: {
+      gap: 8,
+    },
+    fieldLabel: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: 16,
+      minHeight: 56,
+    },
+    inputRowMultiline: {
+      alignItems: 'flex-start',
+      paddingVertical: 12,
+    },
+    input: {
+      flex: 1,
+      fontSize: 20,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    inputMultiline: {
+      minHeight: 72,
+      textAlignVertical: 'top',
+    },
+    suffix: {
+      fontSize: 18,
+      color: colors.textMuted,
+      marginLeft: 8,
+    },
+    error: {
+      fontSize: 16,
+      color: colors.destructive,
+      lineHeight: 22,
+    },
+    footer: {
+      paddingHorizontal: 24,
+      paddingTop: 12,
+      paddingBottom: 8,
+      gap: 12,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSubtle,
+      backgroundColor: colors.background,
+    },
+  });
+}

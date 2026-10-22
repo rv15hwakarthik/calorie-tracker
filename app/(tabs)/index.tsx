@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -27,9 +27,13 @@ import {
 import { buildMacroStats, formatMacroValue } from '@/src/features/dashboard/macroStats';
 import { useNetworkStatus } from '@/src/features/network/NetworkProvider';
 import { scheduleReminders } from '@/src/features/notifications/scheduleReminders';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import { getTodayLogDate, isTodayLogDate } from '@/src/lib/dates';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 export default function TodayScreen() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { isOnline } = useNetworkStatus();
   const queryClient = useQueryClient();
   const [selectedLogDate, setSelectedLogDate] = useState(() => getTodayLogDate());
@@ -115,7 +119,11 @@ export default function TodayScreen() {
         contentContainerStyle={styles.content}
         refreshControl={
           dailyLog ? (
-            <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={colors.brandDark}
+            />
           ) : undefined
         }
       >
@@ -130,7 +138,7 @@ export default function TodayScreen() {
             <LargeButton label="Retry" onPress={() => void dailyLogQuery.refetch()} />
           </View>
         ) : isDayLoading ? (
-          <DayContentSkeleton />
+          <DayContentSkeleton colors={colors} />
         ) : dailyLog ? (
           <>
             <View style={styles.header}>
@@ -157,7 +165,7 @@ export default function TodayScreen() {
 
               {isFoodLoading ? (
                 <View style={styles.inlineLoader}>
-                  <ActivityIndicator color="#1B5E20" />
+                  <ActivityIndicator color={colors.brandDark} />
                 </View>
               ) : foodEntries.length === 0 ? (
                 <View style={styles.emptyCard}>
@@ -206,7 +214,9 @@ export default function TodayScreen() {
   );
 }
 
-function DayContentSkeleton() {
+function DayContentSkeleton({ colors }: { colors: AppThemeColors }) {
+  const styles = useMemo(() => createSkeletonStyles(colors), [colors]);
+
   return (
     <View style={styles.skeletonContainer}>
       <View style={styles.skeletonHeader}>
@@ -220,123 +230,125 @@ function DayContentSkeleton() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-  },
-  container: {
-    flex: 1,
-  },
-  content: {
-    padding: 24,
-    gap: 24,
-    paddingBottom: 120,
-  },
-  header: {
-    gap: 6,
-  },
-  dateSubLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2E7D32',
-  },
-  summaryTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#111111',
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#444444',
-  },
-  section: {
-    gap: 12,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#111111',
-  },
-  sectionMeta: {
-    fontSize: 16,
-    color: '#666666',
-  },
-  inlineLoader: {
-    paddingVertical: 24,
-    alignItems: 'center',
-  },
-  emptyCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  emptyText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#666666',
-  },
-  errorCard: {
-    gap: 16,
-    paddingVertical: 24,
-  },
-  errorTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#111111',
-    textAlign: 'center',
-  },
-  errorText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#666666',
-    textAlign: 'center',
-  },
-  footer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 24,
-    backgroundColor: '#FAFAFA',
-    borderTopWidth: 1,
-    borderTopColor: '#E8E8E8',
-  },
-  skeletonContainer: {
-    gap: 24,
-  },
-  skeletonHeader: {
-    gap: 10,
-  },
-  skeletonBlock: {
-    backgroundColor: '#ECECEC',
-    borderRadius: 16,
-  },
-  skeletonTitle: {
-    height: 28,
-    width: '55%',
-  },
-  skeletonSubtitle: {
-    height: 20,
-    width: '35%',
-  },
-  skeletonCard: {
-    height: 72,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      flex: 1,
+    },
+    content: {
+      padding: 24,
+      gap: 24,
+      paddingBottom: 120,
+    },
+    header: {
+      gap: 6,
+    },
+    summaryTitle: {
+      fontSize: 28,
+      fontWeight: '800',
+      color: colors.text,
+    },
+    summaryValue: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.textMuted,
+    },
+    section: {
+      gap: 12,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    sectionTitle: {
+      fontSize: 22,
+      fontWeight: '800',
+      color: colors.text,
+    },
+    sectionMeta: {
+      fontSize: 16,
+      color: colors.textMuted,
+    },
+    inlineLoader: {
+      paddingVertical: 24,
+      alignItems: 'center',
+    },
+    emptyCard: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 20,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    emptyText: {
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors.textMuted,
+    },
+    errorCard: {
+      gap: 16,
+      paddingVertical: 24,
+    },
+    errorTitle: {
+      fontSize: 22,
+      fontWeight: '800',
+      color: colors.text,
+      textAlign: 'center',
+    },
+    errorText: {
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
+    footer: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      paddingHorizontal: 24,
+      paddingTop: 12,
+      paddingBottom: 24,
+      backgroundColor: colors.background,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSubtle,
+    },
+  });
+}
+
+function createSkeletonStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    skeletonContainer: {
+      gap: 24,
+    },
+    skeletonHeader: {
+      gap: 10,
+    },
+    skeletonBlock: {
+      backgroundColor: colors.skeleton,
+      borderRadius: 16,
+    },
+    skeletonTitle: {
+      height: 28,
+      width: '55%',
+    },
+    skeletonSubtitle: {
+      height: 20,
+      width: '35%',
+    },
+    skeletonCard: {
+      height: 72,
+    },
+  });
+}

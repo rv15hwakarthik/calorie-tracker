@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import type { FoodEntry } from '@/src/types/database';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type FoodEntryRowProps = {
   entry: FoodEntry;
@@ -9,6 +12,9 @@ type FoodEntryRowProps = {
 };
 
 export function FoodEntryRow({ entry, onDelete, isDeleting = false }: FoodEntryRowProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.row}>
       <View style={styles.content}>
@@ -39,41 +45,43 @@ function formatGrams(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
-const styles = StyleSheet.create({
-  row: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  content: {
-    flex: 1,
-    gap: 4,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  macros: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#666666',
-  },
-  deleteButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  deletePressed: {
-    opacity: 0.6,
-  },
-  deleteLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#B00020',
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    row: {
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    content: {
+      flex: 1,
+      gap: 4,
+    },
+    name: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    macros: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: colors.textMuted,
+    },
+    deleteButton: {
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+    },
+    deletePressed: {
+      opacity: 0.6,
+    },
+    deleteLabel: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: colors.destructive,
+    },
+  });
+}

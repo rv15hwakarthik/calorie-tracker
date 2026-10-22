@@ -1,23 +1,24 @@
 import { Tabs } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 
-const TAB_ACTIVE = '#1B5E20';
-const TAB_INACTIVE = '#B8B8B8';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 
 export default function TabLayout() {
+  const { colors } = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: TAB_ACTIVE,
-        tabBarInactiveTintColor: TAB_INACTIVE,
+        tabBarActiveTintColor: colors.brandDark,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E8E8E8',
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
         },
         headerStyle: {
-          backgroundColor: '#FAFAFA',
+          backgroundColor: colors.background,
         },
-        headerTintColor: '#1B5E20',
+        headerTintColor: colors.brandDark,
         headerTitleStyle: {
           fontWeight: '800',
         },

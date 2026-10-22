@@ -1,4 +1,5 @@
 import { router, type Href } from 'expo-router';
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { FemaleIcon, MaleIcon, OtherIcon } from '@/src/components/icons/GenderIcons';
@@ -8,7 +9,9 @@ import { NumberWheelPicker } from '@/src/components/ui/NumberWheelPicker';
 import { StepScreen } from '@/src/components/ui/StepScreen';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { getFirstName } from '@/src/features/auth/getFirstName';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import { useOnboardingStore } from '@/src/stores/onboardingStore';
+import type { AppThemeColors } from '@/src/theme/colors';
 import type { Gender } from '@/src/types/database';
 
 const GENDER_ICONS = {
@@ -24,6 +27,8 @@ const GENDERS: { value: Gender; label: string }[] = [
 ];
 
 export default function AgeGenderScreen() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const { session, profile } = useAuth();
   const { age, gender, setAge, setGender } = useOnboardingStore();
   const firstName = getFirstName(session, profile);
@@ -49,7 +54,7 @@ export default function AgeGenderScreen() {
         <Text style={styles.label}>Gender</Text>
         {GENDERS.map((option) => {
           const Icon = GENDER_ICONS[option.value];
-          const iconColor = gender === option.value ? '#1B5E20' : '#666666';
+          const iconColor = gender === option.value ? colors.brandDark : colors.textMuted;
 
           return (
             <ChoiceCard
@@ -66,13 +71,15 @@ export default function AgeGenderScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  label: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  genderList: {
-    gap: 12,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    label: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    genderList: {
+      gap: 12,
+    },
+  });
+}

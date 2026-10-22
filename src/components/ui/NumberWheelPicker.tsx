@@ -10,6 +10,9 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
+
 const WHEEL_HEIGHT = 72;
 
 type NumberWheelPickerProps = {
@@ -41,6 +44,8 @@ export function NumberWheelPicker({
   onChange,
   style,
 }: NumberWheelPickerProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const scrollRef = useRef<ScrollView>(null);
   const isInteracting = useRef(false);
   const hasMomentum = useRef(false);
@@ -181,60 +186,62 @@ export function NumberWheelPicker({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 8,
-  },
-  labelRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 8,
-  },
-  label: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  suffixLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#666666',
-  },
-  wheelFrame: {
-    height: WHEEL_HEIGHT,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    backgroundColor: '#FFFFFF',
-    overflow: 'hidden',
-    justifyContent: 'center',
-  },
-  selectionBand: {
-    position: 'absolute',
-    top: 8,
-    bottom: 8,
-    left: '50%',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#1B5E20',
-    backgroundColor: 'rgba(232, 245, 233, 0.25)',
-    zIndex: 0,
-  },
-  itemCell: {
-    height: WHEEL_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemText: {
-    width: '100%',
-    fontSize: 24,
-    color: '#AAAAAA',
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  itemTextFocused: {
-    fontSize: 28,
-    color: '#1B5E20',
-    fontWeight: '800',
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    container: {
+      gap: 8,
+    },
+    labelRow: {
+      flexDirection: 'row',
+      alignItems: 'baseline',
+      gap: 8,
+    },
+    label: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    suffixLabel: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.textMuted,
+    },
+    wheelFrame: {
+      height: WHEEL_HEIGHT,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      overflow: 'hidden',
+      justifyContent: 'center',
+    },
+    selectionBand: {
+      position: 'absolute',
+      top: 8,
+      bottom: 8,
+      left: '50%',
+      borderRadius: 12,
+      borderWidth: 2,
+      borderColor: colors.brandDark,
+      backgroundColor: colors.brandMutedBg,
+      zIndex: 0,
+    },
+    itemCell: {
+      height: WHEEL_HEIGHT,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    itemText: {
+      width: '100%',
+      fontSize: 24,
+      color: colors.textDisabled,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    itemTextFocused: {
+      fontSize: 28,
+      color: colors.brandDark,
+      fontWeight: '800',
+    },
+  });
+}

@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import {
   clampLogDateToToday,
   compareLogDates,
@@ -8,6 +10,7 @@ import {
   isTodayLogDate,
   shiftLogDate,
 } from '@/src/lib/dates';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type DateNavigatorProps = {
   logDate: string;
@@ -15,6 +18,9 @@ type DateNavigatorProps = {
 };
 
 export function DateNavigator({ logDate, onChange }: DateNavigatorProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const today = getTodayLogDate();
   const isToday = isTodayLogDate(logDate);
   const canGoForward = compareLogDates(logDate, today) < 0;
@@ -28,10 +34,10 @@ export function DateNavigator({ logDate, onChange }: DateNavigatorProps) {
   return (
     <View style={styles.container}>
       <View style={styles.controls}>
-        <NavButton accessibilityLabel="Go back one week" onPress={goBackOneWeek}>
+        <NavButton accessibilityLabel="Go back one week" onPress={goBackOneWeek} styles={styles}>
           «
         </NavButton>
-        <NavButton accessibilityLabel="Go back one day" onPress={goBackOneDay}>
+        <NavButton accessibilityLabel="Go back one day" onPress={goBackOneDay} styles={styles}>
           ‹
         </NavButton>
       </View>
@@ -48,13 +54,19 @@ export function DateNavigator({ logDate, onChange }: DateNavigatorProps) {
       </Pressable>
 
       <View style={styles.controls}>
-        <NavButton accessibilityLabel="Go forward one day" disabled={!canGoForward} onPress={goForwardOneDay}>
+        <NavButton
+          accessibilityLabel="Go forward one day"
+          disabled={!canGoForward}
+          onPress={goForwardOneDay}
+          styles={styles}
+        >
           ›
         </NavButton>
         <NavButton
           accessibilityLabel="Go forward one week"
           disabled={!canGoForward}
           onPress={goForwardOneWeek}
+          styles={styles}
         >
           »
         </NavButton>
@@ -68,9 +80,10 @@ type NavButtonProps = {
   children: string;
   disabled?: boolean;
   onPress: () => void;
+  styles: ReturnType<typeof createStyles>;
 };
 
-function NavButton({ accessibilityLabel, children, disabled = false, onPress }: NavButtonProps) {
+function NavButton({ accessibilityLabel, children, disabled = false, onPress, styles }: NavButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -89,59 +102,61 @@ function NavButton({ accessibilityLabel, children, disabled = false, onPress }: 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 4,
-  },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  navButton: {
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  navButtonPressed: {
-    opacity: 0.45,
-  },
-  navButtonDisabled: {
-    opacity: 0.25,
-  },
-  navButtonLabel: {
-    fontSize: 30,
-    fontWeight: '600',
-    color: '#1B5E20',
-    lineHeight: 32,
-  },
-  navButtonLabelDisabled: {
-    color: '#999999',
-  },
-  dateButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    gap: 2,
-  },
-  datePressed: {
-    opacity: 0.7,
-  },
-  dateLabel: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1B5E20',
-    textAlign: 'center',
-  },
-  todayHint: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2E7D32',
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 4,
+    },
+    controls: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    navButton: {
+      minWidth: 44,
+      minHeight: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 4,
+    },
+    navButtonPressed: {
+      opacity: 0.45,
+    },
+    navButtonDisabled: {
+      opacity: 0.25,
+    },
+    navButtonLabel: {
+      fontSize: 30,
+      fontWeight: '600',
+      color: colors.brandDark,
+      lineHeight: 32,
+    },
+    navButtonLabelDisabled: {
+      color: colors.textDisabled,
+    },
+    dateButton: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      gap: 2,
+    },
+    datePressed: {
+      opacity: 0.7,
+    },
+    dateLabel: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.brandDark,
+      textAlign: 'center',
+    },
+    todayHint: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: colors.brand,
+    },
+  });
+}

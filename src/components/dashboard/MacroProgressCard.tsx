@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -7,17 +8,23 @@ import {
   getProgress,
   type MacroStat,
 } from '@/src/features/dashboard/macroStats';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type MacroProgressCardProps = {
   stat: MacroStat;
 };
 
 export function MacroProgressCard({ stat }: MacroProgressCardProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   const progress = getProgress(stat.consumed, stat.target);
   const progressState = getMacroProgressState(stat.consumed, stat.target);
   const alertMessage = getMacroAlertMessage(stat.consumed, stat.target);
   const hasTarget = stat.target != null && stat.target > 0;
-  const fillColor = progressState === 'alert' ? '#E65100' : stat.emphasized ? '#1B5E20' : '#66BB6A';
+  const fillColor =
+    progressState === 'alert' ? colors.warning : stat.emphasized ? colors.brandDark : colors.progressFill;
 
   return (
     <View style={[styles.card, stat.emphasized ? styles.emphasizedCard : null]}>
@@ -40,51 +47,53 @@ export function MacroProgressCard({ stat }: MacroProgressCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    gap: 10,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
-  emphasizedCard: {
-    borderColor: '#A5D6A7',
-    backgroundColor: '#F1F8E9',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#333333',
-  },
-  emphasizedLabel: {
-    color: '#1B5E20',
-  },
-  value: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555555',
-  },
-  track: {
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: '#E8E8E8',
-    overflow: 'hidden',
-  },
-  fill: {
-    height: '100%',
-    borderRadius: 999,
-  },
-  statusLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#E65100',
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      padding: 16,
+      gap: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    emphasizedCard: {
+      borderColor: colors.brandBorder,
+      backgroundColor: colors.brandMutedBg,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 12,
+    },
+    label: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    emphasizedLabel: {
+      color: colors.brandDark,
+    },
+    value: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.textMuted,
+    },
+    track: {
+      height: 10,
+      borderRadius: 999,
+      backgroundColor: colors.progressTrack,
+      overflow: 'hidden',
+    },
+    fill: {
+      height: '100%',
+      borderRadius: 999,
+    },
+    statusLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.warning,
+    },
+  });
+}

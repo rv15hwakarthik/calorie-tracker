@@ -9,8 +9,10 @@ import { TargetField } from '@/src/components/ui/TargetField';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { dashboardKeys } from '@/src/features/dashboard/queryKeys';
 import { submitOnboarding } from '@/src/features/onboarding/submitOnboarding';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
 import { calculateTargets, type MacroTargets } from '@/src/lib/macros';
 import { useOnboardingStore } from '@/src/stores/onboardingStore';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 function targetsToFormState(targets: MacroTargets) {
   return {
@@ -34,6 +36,8 @@ function parseTargets(form: ReturnType<typeof targetsToFormState>, fallback: Mac
 }
 
 export default function ReviewTargetsScreen() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const queryClient = useQueryClient();
   const { session, refreshProfile } = useAuth();
   const { age, gender, heightCm, weightKg, activityLevel, setTargets } = useOnboardingStore();
@@ -162,37 +166,39 @@ export default function ReviewTargetsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  maintenanceCard: {
-    backgroundColor: '#E8F5E9',
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#A5D6A7',
-    padding: 20,
-    alignItems: 'center',
-    gap: 4,
-  },
-  maintenanceLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2E7D32',
-    textAlign: 'center',
-  },
-  maintenanceValue: {
-    fontSize: 48,
-    fontWeight: '800',
-    color: '#1B5E20',
-    lineHeight: 52,
-  },
-  maintenanceUnit: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#388E3C',
-    marginBottom: 8,
-  },
-  error: {
-    fontSize: 16,
-    color: '#B00020',
-    lineHeight: 22,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    maintenanceCard: {
+      backgroundColor: colors.brandMutedBg,
+      borderRadius: 16,
+      borderWidth: 2,
+      borderColor: colors.brandBorder,
+      padding: 20,
+      alignItems: 'center',
+      gap: 4,
+    },
+    maintenanceLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.brand,
+      textAlign: 'center',
+    },
+    maintenanceValue: {
+      fontSize: 48,
+      fontWeight: '800',
+      color: colors.brandDark,
+      lineHeight: 52,
+    },
+    maintenanceUnit: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: colors.brand,
+      marginBottom: 8,
+    },
+    error: {
+      fontSize: 16,
+      color: colors.destructive,
+      lineHeight: 22,
+    },
+  });
+}

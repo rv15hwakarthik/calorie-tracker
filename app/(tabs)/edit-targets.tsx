@@ -11,6 +11,8 @@ import { TargetField } from '@/src/components/ui/TargetField';
 import { useAuth } from '@/src/features/auth/AuthProvider';
 import { dashboardKeys } from '@/src/features/dashboard/queryKeys';
 import { updateProfileTargets } from '@/src/features/profile/updateProfileTargets';
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 function toFormState(profile: {
   target_protein_g: number | null;
@@ -29,6 +31,8 @@ function toFormState(profile: {
 }
 
 export default function EditTargetsScreen() {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const queryClient = useQueryClient();
   const { session, profile, refreshProfile } = useAuth();
   const [form, setForm] = useState(() =>
@@ -82,7 +86,7 @@ export default function EditTargetsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <OfflineBanner />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.subtitle}>These targets apply to today and future days you log.</Text>
@@ -128,27 +132,34 @@ export default function EditTargetsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-  },
-  content: {
-    padding: 24,
-    gap: 16,
-  },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#666666',
-  },
-  error: {
-    fontSize: 16,
-    color: '#B00020',
-    lineHeight: 22,
-  },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: 24,
+      gap: 16,
+      paddingBottom: 32,
+    },
+    subtitle: {
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors.textMuted,
+    },
+    error: {
+      fontSize: 16,
+      color: colors.destructive,
+      lineHeight: 22,
+    },
+    footer: {
+      paddingHorizontal: 24,
+      paddingTop: 12,
+      paddingBottom: 24,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSubtle,
+      backgroundColor: colors.background,
+    },
+  });
+}

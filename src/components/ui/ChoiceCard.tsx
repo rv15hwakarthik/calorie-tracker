@@ -1,6 +1,9 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type ChoiceCardProps = {
   title: string;
@@ -10,9 +13,14 @@ type ChoiceCardProps = {
   onPress: () => void;
 };
 
-function CheckBadge() {
+function CheckBadge({ colors, colorScheme }: { colors: AppThemeColors; colorScheme: 'light' | 'dark' }) {
+  const badgeColor = colorScheme === 'dark' ? colors.brand : colors.brandDark;
+
   return (
-    <View style={styles.checkBadge} accessibilityLabel="Selected">
+    <View
+      style={[checkBadgeBase, { backgroundColor: badgeColor }]}
+      accessibilityLabel="Selected"
+    >
       <Svg width={16} height={16} viewBox="0 0 24 24" fill="none">
         <Path
           d="M20 6 9 17l-5-5"
@@ -33,6 +41,9 @@ export function ChoiceCard({
   selected,
   onPress,
 }: ChoiceCardProps) {
+  const { colors, colorScheme } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -45,51 +56,53 @@ export function ChoiceCard({
         <Text style={styles.title}>{title}</Text>
         {description ? <Text style={styles.description}>{description}</Text> : null}
       </View>
-      {selected ? <CheckBadge /> : null}
+      {selected ? <CheckBadge colors={colors} colorScheme={colorScheme} /> : null}
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
-    padding: 18,
-    gap: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  selected: {
-    borderColor: '#1B5E20',
-    backgroundColor: '#F1F8E9',
-  },
-  iconWrap: {
-    width: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textWrap: {
-    flex: 1,
-    gap: 4,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  description: {
-    fontSize: 17,
-    lineHeight: 24,
-    color: '#555555',
-  },
-  checkBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#1B5E20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: 16,
+      borderWidth: 2,
+      borderColor: colors.border,
+      padding: 18,
+      gap: 12,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    selected: {
+      borderColor: colors.brandDark,
+      backgroundColor: colors.brandMutedBg,
+    },
+    iconWrap: {
+      width: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    textWrap: {
+      flex: 1,
+      gap: 4,
+    },
+    title: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    description: {
+      fontSize: 17,
+      lineHeight: 24,
+      color: colors.textMuted,
+    },
+  });
+}
+
+const checkBadgeBase = {
+  width: 28,
+  height: 28,
+  borderRadius: 14,
+  alignItems: 'center' as const,
+  justifyContent: 'center' as const,
+};

@@ -1,4 +1,8 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { useAppTheme } from '@/src/features/theme/ThemeProvider';
+import type { AppThemeColors } from '@/src/theme/colors';
 
 type TargetFieldProps = {
   label: string;
@@ -8,6 +12,9 @@ type TargetFieldProps = {
 };
 
 export function TargetField({ label, value, suffix, onChangeText }: TargetFieldProps) {
+  const { colors } = useAppTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -17,6 +24,7 @@ export function TargetField({ label, value, suffix, onChangeText }: TargetFieldP
           value={value}
           onChangeText={onChangeText}
           style={styles.input}
+          placeholderTextColor={colors.textDisabled}
         />
         <Text style={styles.suffix}>{suffix}</Text>
       </View>
@@ -24,34 +32,36 @@ export function TargetField({ label, value, suffix, onChangeText }: TargetFieldP
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  inputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    paddingHorizontal: 16,
-    minHeight: 56,
-  },
-  input: {
-    flex: 1,
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#111111',
-  },
-  suffix: {
-    fontSize: 18,
-    color: '#666666',
-    marginLeft: 8,
-  },
-});
+function createStyles(colors: AppThemeColors) {
+  return StyleSheet.create({
+    container: {
+      gap: 8,
+    },
+    label: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    inputRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderRadius: 14,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: 16,
+      minHeight: 56,
+    },
+    input: {
+      flex: 1,
+      fontSize: 24,
+      fontWeight: '700',
+      color: colors.text,
+    },
+    suffix: {
+      fontSize: 18,
+      color: colors.textMuted,
+      marginLeft: 8,
+    },
+  });
+}
